@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap 101 Template</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+  	<div class="container box">
+  		<div>
+  			<h1>用户信息:</h1>
+  		<table class="table">
+     	<thead class="table-bordered text-center">
+  				<tr>
+  					<td>真实姓名</td>
+  					<td>用户昵称</td>
+  					<td>QQ</td>
+  					<td>年龄</td>
+  					<td>头像</td>
+  					<td>Email</td>
+  				</tr>
+  			</thead>
+  			<tbody class="table-bordered text-center">
+  				<tr>
+  					<td id='as'></td>
+  					<td id='bb'></td>
+  					<td id='cc'></td>
+  					<td id='dd'></td>
+  					<td id='ee'>头像</td>
+  					<td id='gg'></td>
+  				</tr>
+  			</tbody>
+  		</table>
+  		</div>
+  		<div>
+  			<h3>最近发布过的文章:</h3>
+  		<table class="table">	
+  			<thead class="table-bordered text-center">
+  				<tr>
+  					<td>标题</td>
+  					<td>发布时间</td>
+  					<td>浏览次数</td>
+  				
+  				</tr>
+  			</thead>
+  			<tbody class="table-bordered text-center tbody1">
+  			</tbody>
+  		</table>
+  		</div>
+  	</div>
+  	<!--	<div class="container">
+  			<h3 class="text-center">标题</h3>
+  		</div>-->
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+    	$.ajax({   		
+    		url:'http://localhost:8000/go/userDetail',
+    		type:'post',
+    		data:{
+    			uid:window.location.href.split('=')[1]
+    		},
+    		success:(data)=>{
+          if(data=='404'){
+            document.body.innerHTML='<img src="http://localhost:8000/img/timg.jpg" width=100% class="img-circle">'
+          }else{
+              console.log(data)
+          as.innerHTML=data[0].zname;
+          bb.innerHTML=data[0].name;
+          cc.innerHTML=data[0].qq;
+          dd.innerHTML=data[0].sex;
+          ee.innerHTML='<img src="'+data[0].imgurl+'" style="width:100px;height:100px">';
+          gg.innerHTML=data[0].email;
+          $.ajax({
+            type:"post",
+            url:"http://localhost:8000/go/userText",
+            data:{
+            uid:data[0].uid
+            },
+            success:(data)=>{
+
+              var str=''
+              for(var i=0;i<data.length;i++){
+                str+=`<tr>
+                <td><a href="http://localhost:8000/html/look.html?uid=${data[i].uid}">${data[i].title}</a></td>
+                <td>${data[i].time}</td>
+                <td>${data[i].num}</td>
+                </tr>`
+              }
+              $('.tbody1').append(str)
+            },
+            error:function(){
+                console.log('失败')
+             }
+          });
+          }
+    		},
+    		error:function(){
+    			alert('1')
+    		}
+    	})
+    </script>
+  </body>
+</html>
+    				

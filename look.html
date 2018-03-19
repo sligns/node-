@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title></title>
+
+		<link href="css/bootstrap.css" rel="stylesheet">
+			<style>
+				.ab{
+					margin-left:240px;
+					font-size:16px;
+					margin-top: 25px;
+					margin-bottom: 25px;
+				}
+				#names,#time,#nums{
+					margin-right:30px;
+				}
+			</style>
+	</head>
+
+	<body>
+		<div class='container'>
+			<header>
+			<h1 class='text-center' id='title'>文章标题</h1>
+			<div class='ab'>
+			作者:<span id='names'></span>
+			发布时间:<span id='time'></span>
+			浏览次数:<span id='nums'></span>
+			</div>
+			</header>
+			<div class='content' style='height:300px;width:800px;font-size:27px;' id='context'>文章内容</div>
+			
+		</div>
+		<div class='container'>
+			<div id='tb'>
+				
+			</div>
+				
+		</div>
+		<div class='container pl' id="abc">
+			<textarea id='fabu' style="resize:none;width:450px;height:50px;"></textarea><br>
+			<input type='button' class='btn btn-default btn-info' value='发送' id='btn'>
+		</div>
+		<script type="text/javascript" src="js/jq.js" ></script>
+		<script src="js/bootstrap.js"></script>
+		<script>
+			
+	                     if(sessionStorage.key(0)){
+		  				  		$('#abc').removeClass('fade')
+		  				 }else{
+		  				 	$('#abc').addClass('fade')
+		  				 }
+
+             var oname=''
+             var oimg=''
+
+             $.ajax({   		
+    		url:'http://localhost:8000/go/userDetail',
+    		type:'post',
+    		data:{
+    			uid:sessionStorage.key(0)
+    		},
+    		success:function(da){
+    			oname=da[0].name
+    			oimg=da[0].imgurl
+    		
+    		},
+    		error:function(da){
+
+    		}
+    	})	
+
+
+			//新闻页面
+					$.ajax({
+				url:'http://localhost:8000/go/listDetail',
+				type:'post',
+				data:{
+					uid:window.location.href.split('=')[1]
+				}, 
+				success:function(da){
+					console.log(da)
+					if(da=='404'){
+						document.body.innerHTML='<img src="http://localhost:8000/img/timg.jpg" width=100% class="img-circle">'
+					}else{
+										var str=''
+					str+=`<a href="http://localhost:8000/html/detail.html?uid=${da[0].uid}">${da[0].name}</a>`
+					title.innerHTML=da[0].title
+				   names.innerHTML=str
+			   	time.innerHTML=da[0].time
+				nums.innerHTML=++da[0].num
+			    context.innerHTML=da[0].context
+			    $.ajax({
+			    	url:'http://localhost:8000/go/look',
+				type:'post',
+				data:{
+					uid:window.location.href.split('=')[1],
+					num:nums.innerHTML
+				}, 
+				success:function(){
+					
+				}
+			    })
+					}
+	
+					
+				}
+			})
+				
+				//评论发布  传到MySQL
+//		  			$.ajax({
+//				url:'http://localhost:8000/go/talkJoin',
+//				type:'post',
+//				data:{
+//					tuid:window.location.href.split('=')[1],
+//					imgurl:1,
+//					taname:'user',
+//					con:fabu.value,
+//                 otime:time.innerHTML				
+//				},
+//				success:function(da){
+//					console.log(da)
+//			
+//	
+//				}
+//			})
+		  		//	评论发布  显示到页面
+		  		//	
+		  				  			$.ajax({
+				url:'http://localhost:8000/go/taList',
+			type:'post',
+			data:{
+					tuid:window.location.href.split('=')[1]
+			},
+				success:function(da){
+					console.log(da)
+							for(var i in da){
+						var str=''
+						str+=`<div style='margin-bottom:30px;background: #ccc;'>
+									<img src="${da[i].imgurl}" width=30 class='img-circle'>
+				<span>${da[i].name}  :  </span>
+				<br>
+				<span>${da[i].time}</span>
+				<br>
+				<br>
+				<span>${da[i].con}
+					</span>
+					</div>`
+					tb.innerHTML+=str;
+					}
+
+				}
+		})
+		  				  			
+		  				  			
+
+		  				  		
+		  				  			
+		  			
+					btn.onclick=function(){
+						var t=new Date()
+									$.ajax({
+				url:'http://localhost:8000/go/talkJoin',
+				type:'post',
+				data:{
+					tuid:window.location.href.split('=')[1]	,
+					imgurl:oimg,
+					taname:oname,
+					con:fabu.value,
+                   otime:t.toLocaleString()
+				},
+				success:function(da){
+								
+					$.ajax({
+				url:'http://localhost:8000/go/taList',
+				type:'post',
+				data:{
+					tuid:window.location.href.split('=')[1]				
+				},
+				success:function(da){
+					console.log(da)
+			
+						var str=''
+						str+=`<div style='margin-bottom:30px;background: #ccc;''>
+									<img src="${da[da.length-1].imgurl}" width=30 class='img-circle'>
+				<span>${da[da.length-1].name}  :  </span>
+				<br>
+				<span>${da[da.length-1].time}</span>
+				<br>
+				<br>
+				<span>${da[da.length-1].con}
+					</span>
+					</div>`
+					tb.innerHTML+=str;
+					
+					
+	
+				}
+			})
+	
+				}
+			})
+									
+			
+					}
+					
+		</script>
+	</body>
+
+</html>
